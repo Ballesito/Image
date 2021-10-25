@@ -1,6 +1,12 @@
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -21,6 +27,25 @@ public class MainForm extends javax.swing.JFrame {
     public MainForm() {
         initComponents();
     }
+    
+    private ImageIcon resizeImageIcon (BufferedImage originalImage, int desiredWidth, int desiredHeight) {
+        int newHeight = 0;    
+        int newWidth = 0;
+        float aspectRatio = (float)originalImage.getWidth() / originalImage.getHeight();
+        if (originalImage.getWidth() > originalImage.getHeight()) {
+            newWidth = desiredWidth;
+            newHeight = Math.round( desiredWidth / aspectRatio);                
+        }
+        else {
+            newHeight = desiredHeight;
+            newWidth = Math.round(desiredHeight * aspectRatio);
+        }
+        Image resultingImage = originalImage.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        BufferedImage outputImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        outputImage.getGraphics().drawImage(resultingImage, 0, 0, null);
+        ImageIcon imageIcon = new ImageIcon(outputImage);
+        return imageIcon;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -34,6 +59,7 @@ public class MainForm extends javax.swing.JFrame {
         lblImage = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstOptions = new javax.swing.JList<>();
+        btnLoadImages = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -42,11 +68,6 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
 
-        lstOptions.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Negro", "Ojos", "Chill", "Modelo" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         lstOptions.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 lstOptionsValueChanged(evt);
@@ -54,24 +75,36 @@ public class MainForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(lstOptions);
 
+        btnLoadImages.setText("Load Images");
+        btnLoadImages.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoadImagesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(19, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(lblImage, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnLoadImages)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lblImage, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(33, 33, 33)
+                .addContainerGap()
+                .addComponent(btnLoadImages)
+                .addGap(3, 3, 3)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE))
+                    .addComponent(lblImage, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
 
@@ -81,23 +114,71 @@ public class MainForm extends javax.swing.JFrame {
     private void lstOptionsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstOptionsValueChanged
         String selectedImage = lstOptions.getSelectedValue();
         
+        try {
+            BufferedImage buIm = ImageIO.read(new File("src\\Images\\" + selectedImage));
+            ImageIcon icon = resizeImageIcon(buIm, lblImage.getWidth(), lblImage.getHeight());
+            lblImage.setIcon(icon);
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
         
     }//GEN-LAST:event_lstOptionsValueChanged
-
+    
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         
-    //https://www.delftstack.com/es/howto/java/how-to-read-files-from-a-folder-in-java/
+        //https://www.delftstack.com/es/howto/java/how-to-read-files-from-a-folder-in-java/
+
+        //File folder = new File("src\\Images");
+        //findAllFilesInFolder(folder);
         
-        File folder = new File("src\\Images");
-        for (File file : folder.listFiles()) {
-            if (!file.isDirectory()) {
-                    System.out.println(file.getName());
-            } /*else {
-                    findAllFilesInFolder(file);
-            }*/
-        }   
+        File imagesFolder = new File("src\\Images");
+        
+        File[] imagesFiles = imagesFolder.listFiles();
+        DefaultListModel imagesListModel = new DefaultListModel();
+        
+        for(File f: imagesFiles)
+            imagesListModel.addElement(f.getName());
+        
+        lstOptions.setModel(imagesListModel);
+        
     }//GEN-LAST:event_formWindowOpened
 
+    private void btnLoadImagesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoadImagesActionPerformed
+        File imagesFolder = new File("src\\Images");
+        
+        File[] imagesFiles = imagesFolder.listFiles();
+        DefaultListModel imagesListModel = new DefaultListModel();
+        
+        for(File f: imagesFiles)
+            imagesListModel.addElement(f.getName());
+        
+        lstOptions.setModel(imagesListModel);
+    }//GEN-LAST:event_btnLoadImagesActionPerformed
+
+    
+    /*public void findAllFilesInFolder(File folder) {
+        for (File file : folder.listFiles()) {
+            if (!file.isDirectory()) {
+                    names.add(file.getName());
+                    //System.out.println("");
+            } else {
+                    findAllFilesInFolder(file);
+            }
+        }
+        
+        DefaultListModel userListModel = new DefaultListModel();
+       
+        //userListModel.clear();
+        
+        /*for (User u: names)
+            userListModel.addElement(u.toString());
+        
+        for(int i = 0; 0 < names.size(); i++)
+            userListModel.addElement(names.get(i));
+        
+        lstOptions.setModel(userListModel);
+    }*/
+    
     /**
      * @param args the command line arguments
      */
@@ -134,6 +215,7 @@ public class MainForm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLoadImages;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lblImage;
     private javax.swing.JList<String> lstOptions;
