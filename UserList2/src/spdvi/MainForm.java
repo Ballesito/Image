@@ -454,7 +454,7 @@ public class MainForm extends javax.swing.JFrame {
             path = fileChooser.getSelectedFile().getAbsolutePath();
             
         } catch (NullPointerException npe) {
-            path = "C:\\Users\\Alumne\\Documents\\MEGA\\AAA_GradoSuperior\\2n_Curso\\1r_Trimestre\\Desenvolupament d'interficies\\Tema_3\\jpg\\jpg\\jpg\\no-image.jpg";
+            path = "src\\images\\NoImage.jpg";
         }
         
         LocalDate birthDate = LocalDate.now();
@@ -717,8 +717,6 @@ public class MainForm extends javax.swing.JFrame {
     
     private void SaveToFile() {
        
-        String path;
-        String noImage;
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
             for(User u: users) {
@@ -731,25 +729,18 @@ public class MainForm extends javax.swing.JFrame {
                         + "," + u.getNameImage() + System.lineSeparator();
                 writer.append(userString);
                 
-                
-                //path = fileChooser.getSelectedFile().getName();
-                //path = u.getNameImage();
-                
                 //Ahora vamos a guardar una imagen que hemos seleccionado en la carpeta
                 //de nuestro home.
                 //Esa carpeta de UserList2 en AppData/Local la he creado manualmente.
                 //noImage = fileChooser.getSelectedFile().getAbsolutePath();
                 BufferedImage bufferedImage = ImageIO.read(new File(u.getNameImage()));
-                String outputImageAbsolutePath = userFolder + ubi + u.getId() + ".jpg";
+                String outputImageAbsolutePath = userFolder + ubi + "User " + u.getId() + ".jpg";
                 File outputImage = new File(outputImageAbsolutePath);
                 //Creamos la imagen con la extension que le hemos puesto en la ruta
                 //que hemos creado.
                 ImageIO.write(bufferedImage, "jpg", outputImage);
             }
-            writer.close();            
-        } catch (NullPointerException npe) {
-            path = "no-image.jpg";
-            noImage = "no-image.jpg";
+            writer.close();      
         } catch(IOException ioe) {
             System.out.println(ioe.getMessage());
         }
