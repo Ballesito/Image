@@ -58,15 +58,23 @@ public class User {
         this.isAlive = isAlive;
     }
 
+    public String getNameImage() {
+        return nameImage;
+    }
+
+    public void setNameImage(String nameImage) {
+        this.nameImage = nameImage;
+    }
     
     
-    public User(String id, String firstName, String lastName, LocalDate birthDate, String gender, boolean isAlive) {
+    public User(String id, String firstName, String lastName, LocalDate birthDate, String gender, boolean isAlive, String nameImage) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.birthDate = birthDate;
         this.gender = gender;
         this.isAlive = isAlive;
+        this.nameImage = nameImage;
     }
     private String id;
     private String firstName;
@@ -74,7 +82,7 @@ public class User {
     private LocalDate birthDate;
     private String gender;
     private boolean isAlive;
-    //private
+    private String nameImage;
 
     
     
@@ -85,6 +93,8 @@ public class User {
         strUser.append(age + " years old - " + this.gender);
         String alive = this.isAlive ? alive = ", Alive" : ", Dead";
         strUser.append(alive);
+        String path = ", " + this.nameImage;
+        strUser.append(path);
         strUser.append(System.lineSeparator());
         return strUser.toString();
     }

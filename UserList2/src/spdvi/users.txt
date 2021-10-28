@@ -1,7 +1,0 @@
-1,Garcia,Mike,1978-10-01,Male,Alive
-7,Talens,Alba,1997-06-25,Female,Alive
-5,Arvin,John,1958-10-30,Male,Dead
-10,Lan,Joana,1997-08-04,Female,Alive
-12,Leia,Princesa,1969-01-07,Female,Alive
-44,Frozen,Harold,1945-01-01,Male,Dead
-2,Devil,Anna,2000-01-01,Female,Alive
